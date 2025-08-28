@@ -1,11 +1,6 @@
-# RTL88X1
-### Realtek Linux driver for USB AX900 Wifi 6 devices 8851bu and 8831bu
-
-This is for generic USB AX900 realtek devices that use the Realtek 8851bu or 8831bu chipsets.
-
-Examples include: 
-pTIME AX900UA
-Comfast AX900 CF-943F
+# Realtek 8851bu Driver
+This is the Linux device driver for the AX900 USB Dual WIFI + BT5.3 network card, like this one:
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/ff61c722-0286-436b-8e51-c91415ed9ee6" />
 
 This includes unbranded AX900 USB WiFi 6 Bluetooth 5.3 Adapters sold on AliExpress and Amazon
 Example: https://www.aliexpress.us/item/3256807263559115.html
