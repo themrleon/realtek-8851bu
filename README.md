@@ -1,84 +1,84 @@
-# RTL88X1
-### Realtek Linux driver for USB AX900 Wifi 6 devices 8851bu and 8831bu
+# Realtek 8851bu Driver
+This is the Linux device driver for the AX900 USB WIFI + BT network card, like this one:  
+<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/ff61c722-0286-436b-8e51-c91415ed9ee6" />  
 
-This is for generic USB AX900 realtek devices that use the Realtek 8851bu or 8831bu chipsets.
+> [!WARNING] 
+> Some AX900 being sold on websites like Aliexpress may have misleading/wrong information about the chipset model  
 
-Examples include: 
-pTIME AX900UA
-Comfast AX900 CF-943F
+<br/>
 
-This includes unbranded AX900 USB WiFi 6 Bluetooth 5.3 Adapters sold on AliExpress and Amazon
-Example: https://www.aliexpress.us/item/3256807263559115.html
-
-### To compile for ARM64
-If you want to compile the driver for ARM64 architecture, you need to modify the Makefile by changing the following lines:
-```bash
-CONFIG_PLATFORM_I386_PC = n
-CONFIG_PLATFORM_ARM64_PC = y
+# Will this driver work for my device ?
+Only **YOU** can find out! start by identifying the product id from your device. Unplug it from the USB port and run `lsusb`, ex:
 ```
-This will instruct the build process to target ARM64 architecture instead of the default x86 architecture.
-
-### Dkms install: 
-```bash
-sudo dkms install .
+$ lsusb 
+Bus 001 Device 005: ID 258a:002a  
+Bus 001 Device 004: ID 214b:7250  
+Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp. SMSC9512/9514 Fast Ethernet Adapter
+Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp. SMC9514 Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 ```
 
-### Manually install: 
-```bash
-make
+Now plug it back and re-run `lsusb`, look at what changed, the new entry is your device, [**make sure it is NOT in disk mode before proceeding**](#usb-device-mode). Now copy the id after the colon, in this case `b851`:
 ```
-```bash
-sudo make install
-```
-
-You will have to reinstall for any kernel updates.
-```bash
-make clean
-```
-```bash
-make
-```
-```bash
-sudo make install
+$ lsusb 
+Bus 001 Device 007: ID 0bda:b851 Realtek Semiconductor Corp.
+Bus 001 Device 005: ID 258a:002a  
+Bus 001 Device 004: ID 214b:7250  
+Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp. SMSC9512/9514 Fast Ethernet Adapter
+Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp. SMC9514 Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 ```
 
-### Switch the USB Dongle Mode
-By default, USB Wi-Fi dongles are in Driver CDROM Mode, which is incorrect for proper Wi-Fi usage. You need to switch the device to Wi-Fi Mode using usb-modeswitch.
+Do a search on this repo files for that id, adding a `0x` prefix:
+```
+$ grep -r -s -i 0xb851 *
+os_dep/linux/usb_intf.c:	{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDER_ID_REALTEK, 0xB851, 0xff, 0xff, 0xff), .driver_info = RTL8851B},
+phl/hal_g6/mac/mac_ax.c:#define PID_HW_DEF_8851BS	0xB851
+```
+If you see results like above, it means this driver will likely work for your device!
 
-Install usb-modeswitch:
-```bash
-sudo apt-get install usb-modeswitch
-```
+> [!TIP] 
+> If your device id wasn't found in this repo files, you can try a Github global search using the product id, eventually you will find a repo that matches it and is also a driver  
 
-Use lsusb to find the Vendor ID and Product ID of your wireless dongle:
-```bash
-lsusb
-```
+<br/>
 
-Example output:
+# USB device Mode
+Some of these USB wifi dongles have 2 modes, on Windows you will see they behave like a usb flash disk, showing up as a storage device with some files like the Windows driver. If that is the case for you, then on Linux you have to manually switch its mode from storage to network:
 ```
-Bus 002 Device 003: ID 0bda:1a2b Realtek Semiconductor Corp. RTL8188GU 802.11n WLAN Adapter (Driver CDROM Mode)
+$ sudo apt-get install usb-modeswitch
+$ lsusb 
+Bus 001 Device 007: ID 0bda:1a2b Realtek Semiconductor Corp.
+$ sudo usb_modeswitch -K -v 0bda -p 1a2b
 ```
+where `1a2b` is the product id from your device, if all goes well you should see it with the new product id:
+```
+$ lsusb 
+Bus 001 Device 007: ID 0bda:b851 Realtek Semiconductor Corp.
+```
+> [!TIP] 
+> If you don't have access to a Windows machine you can check `sudo dmesg` for clues of which mode your device is right after plugging it
 
-In this example:
-Vendor ID: 0bda
-Product ID: 1a2b
-Use usb-modeswitch to switch the device mode. Replace 0bda and 1a2b with your specific Vendor ID and Product ID:
-```bash
-sudo usb_modeswitch -K -v 0bda -p 1a2b
-```
+<br/>
 
-### Reload the Driver
-After switching the mode, reload the driver with:
-```bash
-sudo modprobe 8851bu
+# Compilling
+By default `make` will try to autodetect your architecture and compile:
 ```
-### Verify Wi-Fi Device is Active
-Check if the Wi-Fi interface is recognized:
-```bash
-iwconfig
+$ git clone https://github.com/themrleon/realtek-8851bu-driver.git
+$ cd realtek-8851bu-driver
+$ make
+$ sudo make install
+$ sudo modprobe 8851bu
 ```
-If the device is still not active, check the kernel logs for any errors related to the driver:
-```bash
-sudo dmesg | grep 8851bu
-```
+> [!WARNING] 
+> if that doesn't work for some reason, you have to manually `y` to your architecture in the `Makefile` and set the autodetect to `n`
+
+<br/>
+
+# Tested Successfully With
+* Raspberry Pi Model B Rev 2 (armv6l 32 bit) / Raspbian 10 (buster) / Kernel 5.10.103+  
+* PC x86_64 / 22.04.1-Ubuntu / Kernel 6.2.0-36-generic
+
+<br/>
+
+# Compiled Raspberry Pi Driver
+Since compiling this driver on the Raspbery Pi takes around ~8h (overclocked at 800Mhz), I am providing the final compiled driver for download too
