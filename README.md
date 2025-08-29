@@ -61,13 +61,16 @@ Bus 001 Device 007: ID 0bda:b851 Realtek Semiconductor Corp.
 <br/>
 
 # Compilling
-By default `make` will try to autodetect your architecture, if that doesn't work for some reason, you have to manually set to `y` (yes) your architecture in the `Makefile` :
+By default `make` will try to autodetect your architecture and compile:
 ```
-git clone https://github.com/themrleon/realtek-8851bu-driver.git
-cd realtek-8851bu-driver
-make
-sudo make install
+$ git clone https://github.com/themrleon/realtek-8851bu-driver.git
+$ cd realtek-8851bu-driver
+$ make
+$ sudo make install
+$ sudo modprobe 8851bu
 ```
+> [!WARNING] 
+> if that doesn't work for some reason, you have to manually set to `y` to your architecture in the `Makefile` and set the autodetect to `n`
 
 <br/>
 
