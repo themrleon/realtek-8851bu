@@ -59,3 +59,23 @@ Bus 001 Device 007: ID 0bda:b851 Realtek Semiconductor Corp.
 > If you don't have access to a Windows machine you can check `sudo dmesg` for clues of which mode your device is right after plugging it
 
 <br/>
+
+# Compilling
+By default `make` will try to autodetect your architecture, if that doesn't work for some reason, you have to manually set to `y` (yes) your architecture in the `Makefile` :
+```
+git clone https://github.com/themrleon/realtek-8851bu-driver.git
+cd realtek-8851bu-driver
+make
+sudo make install
+```
+
+<br/>
+
+# Tested Successfully With
+* Raspberry Pi Model B Rev 2 (armv6l 32 bit) / Raspbian 10 (buster) / Kernel 5.10.103+  
+* PC x86_64 / 22.04.1-Ubuntu / Kernel 6.2.0-36-generic
+
+<br/>
+
+# Compiled Raspberry Pi Driver
+Since compiling this driver on the Raspbery Pi takes around ~8h (overclocked at 800Mhz), I am providing the final compiled driver for download too (Raspbian 10 Kernel 5.10.103+)
