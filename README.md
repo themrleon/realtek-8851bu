@@ -1,5 +1,5 @@
 # Realtek 8851bu Driver
-This is the Linux device driver for the AX900 USB WIFI + BT network card, like this one:  
+This is the Linux device driver for the AX900 USB WIFI + BT network card (wifi driver only):  
 <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/ff61c722-0286-436b-8e51-c91415ed9ee6" />  
 
 > [!WARNING] 
@@ -56,7 +56,7 @@ $ lsusb
 Bus 001 Device 007: ID 0bda:b851 Realtek Semiconductor Corp.
 ```
 > [!TIP] 
-> If you don't have access to a Windows machine you can check `sudo dmesg` for clues of which mode your device is right after plugging it
+> You can check `sudo dmesg` for clues of which mode your device is right after plugging it
 
 <br/>
 
@@ -70,7 +70,7 @@ $ sudo make install
 $ sudo modprobe 8851bu
 ```
 > [!WARNING] 
-> if that doesn't work for some reason, you have to manually `y` to your architecture in the `Makefile` and set the autodetect to `n`
+> if autodetect doesn't work, you have to manually set `y` to your architecture in the `Makefile` and put autodetect to `n`
 
 <br/>
 
@@ -81,4 +81,4 @@ $ sudo modprobe 8851bu
 <br/>
 
 # Compiled Raspberry Pi Driver
-Since compiling this driver on the Raspbery Pi takes around ~8h (overclocked at 800Mhz), I am providing the final compiled driver for download too
+Since compiling this driver on the Raspbery Pi takes around ~8h (overclocked at 800Mhz), I am providing the compiled driver for download too
